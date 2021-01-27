@@ -6,6 +6,8 @@ tweets.db
 # C extensions
 *.so
 
+.idea/**
+
 config.ini
 twint/storage/mysql.py
 

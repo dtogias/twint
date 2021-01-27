@@ -35,7 +35,8 @@ def Tweet(config, t):
         output = output.replace("{trans_dest}", t.trans_dest)
     else:
         logme.debug(__name__+':Tweet:notFormat')
-        output = f"{t.id_str} {t.datestamp} {t.timestamp} {t.timezone} "
+        # output = f"{t.id_str} {t.datestamp} {t.timestamp} {t.timezone} "
+        output = f"{t.id_str} {t.datetime} "
 
         # TODO: someone who is familiar with this code, needs to take a look at what this is <also see tweet.py>
         # if t.retweet:
@@ -43,16 +44,16 @@ def Tweet(config, t):
 
         output += f"<{t.username}> {t.tweet}"
 
-        if config.Show_hashtags:
-            hashtags = ",".join(t.hashtags)
-            output += f" {hashtags}"
-        if config.Show_cashtags:
-            cashtags = ",".join(t.cashtags)
-            output += f" {cashtags}"
-        if config.Stats:
-            output += f" | {t.replies_count} replies {t.retweets_count} retweets {t.likes_count} likes"
-        if config.Translate:
-            output += f" {t.translate} {t.trans_src} {t.trans_dest}"
+        # if config.Show_hashtags:
+        #     hashtags = ",".join(t.hashtags)
+        #     output += f" {hashtags}"
+        # if config.Show_cashtags:
+        #     cashtags = ",".join(t.cashtags)
+        #     output += f" {cashtags}"
+        # if config.Stats:
+        #     output += f" | {t.replies_count} replies {t.retweets_count} retweets {t.likes_count} likes"
+        # if config.Translate:
+        #     output += f" {t.translate} {t.trans_src} {t.trans_dest}"
     return output
 
 def User(_format, u):

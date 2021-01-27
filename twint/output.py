@@ -87,14 +87,14 @@ def _output(obj, output, config, **extra):
         elif obj.__class__.__name__ == "tweet":
             logme.debug(__name__ + ':_output:Lowercase:tweet')
             obj.username = obj.username.lower()
-            author_list.update({obj.username})
-            for dct in obj.mentions:
-                for key, val in dct.items():
-                    dct[key] = val.lower()
-            for i in range(len(obj.hashtags)):
-                obj.hashtags[i] = obj.hashtags[i].lower()
-            for i in range(len(obj.cashtags)):
-                obj.cashtags[i] = obj.cashtags[i].lower()
+            # author_list.update({obj.username})
+            # for dct in obj.mentions:
+            #     for key, val in dct.items():
+            #         dct[key] = val.lower()
+            # for i in range(len(obj.hashtags)):
+            #     obj.hashtags[i] = obj.hashtags[i].lower()
+            # for i in range(len(obj.cashtags)):
+            #     obj.cashtags[i] = obj.cashtags[i].lower()
         else:
             logme.info('_output:Lowercase:hiddenTweetFound')
             print("[x] Hidden tweet found, account suspended due to violation of TOS")
@@ -129,28 +129,30 @@ def _output(obj, output, config, **extra):
 async def checkData(tweet, config, conn):
     logme.debug(__name__ + ':checkData')
     tweet = Tweet(tweet, config)
-    if not tweet.datestamp:
-        logme.critical(__name__ + ':checkData:hiddenTweetFound')
-        print("[x] Hidden tweet found, account suspended due to violation of TOS")
-        return
-    if datecheck(tweet.datestamp + " " + tweet.timestamp, config):
-        output = format.Tweet(config, tweet)
-        if config.Database:
-            logme.debug(__name__ + ':checkData:Database')
-            db.tweets(conn, tweet, config)
-        if config.Pandas:
-            logme.debug(__name__ + ':checkData:Pandas')
-            panda.update(tweet, config)
-        if config.Store_object:
-            logme.debug(__name__ + ':checkData:Store_object')
-            if hasattr(config.Store_object_tweets_list, 'append'):
-                config.Store_object_tweets_list.append(tweet)
-            else:
-                tweets_list.append(tweet)
-        if config.Elasticsearch:
-            logme.debug(__name__ + ':checkData:Elasticsearch')
-            elasticsearch.Tweet(tweet, config)
-        _output(tweet, output, config)
+    output = format.Tweet(config, tweet)
+    _output(tweet, output, config)
+    # if not tweet.datestamp:
+    #     logme.critical(__name__ + ':checkData:hiddenTweetFound')
+    #     print("[x] Hidden tweet found, account suspended due to violation of TOS")
+    #     return
+    # if datecheck(tweet.datestamp + " " + tweet.timestamp, config):
+    #     output = format.Tweet(config, tweet)
+    #     if config.Database:
+    #         logme.debug(__name__ + ':checkData:Database')
+    #         db.tweets(conn, tweet, config)
+    #     if config.Pandas:
+    #         logme.debug(__name__ + ':checkData:Pandas')
+    #         panda.update(tweet, config)
+    #     if config.Store_object:
+    #         logme.debug(__name__ + ':checkData:Store_object')
+    #         if hasattr(config.Store_object_tweets_list, 'append'):
+    #             config.Store_object_tweets_list.append(tweet)
+    #         else:
+    #             tweets_list.append(tweet)
+    #     if config.Elasticsearch:
+    #         logme.debug(__name__ + ':checkData:Elasticsearch')
+    #         elasticsearch.Tweet(tweet, config)
+    #     _output(tweet, output, config)
     # else:
     #     logme.critical(__name__+':checkData:copyrightedTweet')
 
