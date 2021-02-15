@@ -1,7 +1,7 @@
 import sys, os, datetime
 from asyncio import get_event_loop, TimeoutError, ensure_future, new_event_loop, set_event_loop
 
-from . import datelock, feed, get, output, verbose, storage
+from . import datelock, feed, get, output, verbose, storage, preprocess
 from .token import TokenExpiryException
 from . import token
 from .storage import db
@@ -223,6 +223,7 @@ class Twint:
             logme.debug(__name__ + ':Twint:tweets:notLocation')
             for tweet in self.feed:
                 self.count += 1
+                tweet['full_text'] = self.Preprocess(tweet['full_text'])
                 await output.Tweets(tweet, self.config, self.conn)
 
     async def main(self, callback=None):
@@ -310,6 +311,30 @@ class Twint:
             logme.exception(__name__ + ':Twint:Lookup:Unexpected exception occurred.')
             raise
 
+    # OK Lowercase all letters
+    # OK Concatenate whitespaces (‘     ‘ → ‘ ‘)
+    # OK Remove twitter handles (@user) (e.g. "@CryptoWendyO $AAPL, $V, $MA")
+    # OK English only
+    # OK Remove punctuations
+    # Remove tweets that contain only hash/cash tags (e.g. "$AAPL $AMZN $MSFT $GOOG $IBM $FB $TSLA $NFLX")
+    # OK Remove urls, https stuff (e.g. https://t.co/RIW6aUO724)
+    # OK Remove tabs and newlines (\t, \n)
+    def Preprocess(self, tweet):
+
+        normalized = str(tweet)
+        if self.config.Lowercase:
+            normalized = normalized.lower() # lowercase
+        normalized = preprocess.html_decode(normalized)
+        normalized = normalized.replace('\n', ' ')      # replace newline with space
+        normalized = normalized.replace('\t', ' ')      # replace tab with space
+        normalized = normalized.rstrip()                # remove trailing spaces
+        normalized = preprocess.remove_user_handle(normalized)
+        normalized = preprocess.remove_URL(normalized)  # remove urls
+        normalized = preprocess.remove_punctuation_simple(normalized)
+        normalized = preprocess.remove_multiple_whitespace(normalized)  # concatenate whitespaces
+
+        # normalized = normalized.translate(str.maketrans('', '', string.punctuation))
+        return normalized
 
 def run(config, callback=None):
     logme.debug(__name__ + ':run')

@@ -12,7 +12,8 @@ def jobone():
 	# choose search term (optional)
 	c.Search = "AAPL"
 	# choose beginning time (narrow results)
-
+	c.Lang = 'en'
+	c.Lowercase = True
 	c.Since = "2015-12-20"
 	c.Until = "2015-12-21"
 	# set limit on total tweets
