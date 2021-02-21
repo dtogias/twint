@@ -322,8 +322,8 @@ class Twint:
     def Preprocess(self, tweet):
 
         normalized = str(tweet)
-        if self.config.Lowercase:
-            normalized = normalized.lower() # lowercase
+        # if self.config.Lowercase:
+        normalized = normalized.lower() # lowercase
         normalized = preprocess.html_decode(normalized)
         normalized = normalized.replace('\n', ' ')      # replace newline with space
         normalized = normalized.replace('\t', ' ')      # replace tab with space
